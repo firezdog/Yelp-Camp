@@ -1,71 +1,14 @@
-var express     = require("express"),
-    app         = express(),
-    bodyParser  = require("body-parser"),
-    mongoose =   require("mongoose");
+var express = require("express"),
+    app = express(),
+    bodyParser = require("body-parser"),
+    mongoose = require("mongoose"),
+    Campground = require("./models/campgrounds"),
+    seedDB = require("./seeds");
 
 mongoose.connect("mongodb://localhost/yelp_camp");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
-
-//SCHEMA SETUP
-var campgroundSchema = new mongoose.Schema({
-    name: String,
-    image: String,
-    description: String
-});
-
-var Campground = mongoose.model("campground", campgroundSchema);
-
-// Campground.create (
-//     {
-//         name: "Salmon Creek",
-//         image: "https://acadiamagic.com/280x187/md-campground.jpg",
-//         description: "This is a creek filled with salmon. Good sushi."
-//     }, 
-//     function(err, campground) {
-//         if(err) {
-//             console.log(err);
-//         }
-//         else {
-//             console.log("NEWLY CREATED CAMPGROUND");
-//             console.log(campground);
-//         }
-//     }
-// );
-
-// Campground.create (
-//     {
-//         name: "Geneva Glen",
-//         image: "https://www.marylmartin.com/wp-content/uploads/2016/01/343591.jpg",
-//         description: "Geneva, we love you, / Your wonderful fragrance of pine..."
-//     },
-//     function(err, campground) {
-//         if(err) {
-//             console.log(err);
-//         }
-//         else {
-//             console.log("NEWLY CREATED CAMPGROUND");
-//             console.log(campground);
-//         }
-//     }
-// );
-
-// Campground.create (
-//     {
-//         name: "Erana's Peace",
-//         image: "https://i.pinimg.com/originals/b3/66/17/b3661708c29006930fd15fb963864e39.jpg",
-//         description: "The meadow lies covered with a blanket of flowers, unusual for this early in the spring. It is warm, even though surrounded by the late snows of winter. The air has the fresh, clean scent of the mountains, accompanied by numerous perfume-like fragrances. A large, carved stone lies flat on the ground. You feel as though someone gentle were watching over you. You feel that you are safe here." 
-//     },
-//     function(err, campground) {
-//         if(err) {
-//             console.log(err);
-//         }
-//         else {
-//             console.log("NEWLY CREATED CAMPGROUND");
-//             console.log(campground);
-//         }
-//     }
-// )
+seedDB();
 
 app.get("/", function(req, res) {
     res.render("landing")
@@ -110,7 +53,7 @@ app.get("/campgrounds/new", function(req, res) {
 
 //SHOW
 app.get("/campgrounds/:id", function(req, res) {
-    Campground.findById(req.params.id, function(err, foundCampground){
+    Campground.findById(req.params.id).populate("comments").exec(function(err, foundCampground){
         if(err){
             console.log(err)
         } else {
@@ -119,6 +62,6 @@ app.get("/campgrounds/:id", function(req, res) {
     });
 });
 
-app.listen(3000, process.env.IP, function() {
+app.listen(8000, process.env.IP, function() {
     console.log("YelpCamp Server has started.");
 });
