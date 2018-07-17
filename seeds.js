@@ -21,35 +21,41 @@ var data = [
 ]
 
 function seedDB() {
+    //remove comments
+    Comment.remove({}, function(err){
+        if(err){
+            console.log(err);
+        }
+        console.log("Removed old comments.");
+    })
     //remove campgrounds
     Campground.remove({}, function(err){
         if (err) {
             console.log(err);
         }
-        console.log("Removed campgrounds!");
+        console.log("Removed old campgrounds.");
         
         //add a few campgrounds
         data.forEach(function(seed) {
             Campground.create(seed, function(err, campground) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Added campground.")
-                    
-                    //create comment
-                    Comment.create(
-                        {
-                            text: "This place is great, but I wish there were Internet.", 
-                            author: "Homer"
-                        }, function(err, comment) {
-                            if (err) {
-                                console.log(err);
-                            } else {
-                                campground.comments.push(comment);
-                                campground.save();
-                                console.log("Created comment for campground.")
-                            }
-                        });
+            if (err) {
+                console.log(err);
+            } else {
+                console.log("Added campground.");
+                //create comment
+                Comment.create(
+                    {
+                        text: "This place is great, but I wish there were Internet.", 
+                        author: "Homer"
+                    }, function(err, comment) {
+                        if (err) {
+                            console.log(err);
+                        } else {
+                            campground.comments.push(comment);
+                            campground.save();
+                            console.log("Created comment for campground.")
+                        }
+                    });
                 }
             });
         });
